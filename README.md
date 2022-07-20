@@ -1,2 +1,1 @@
-# curly-file-compressor
-Curly File Compressor
+# Curly File Compressor - curlyc
