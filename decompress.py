@@ -5,28 +5,32 @@ def decompress(d, o):
     content = d.read()
     actualContent = content
 
-    if '{;' in content:
-        if '{;' not in content:
+    if '{:' in content:
+        if '{:' not in content:
             print('Nothing to decompress for the file.')
-        if len(re.findall('{;', content)) > 1:
-            raise Exception('File containing more than one "{;". Can not decompress.')
+        if len(re.findall('{:', content)) > 1:
+            raise Exception('File containing more than one "{:". Can not decompress.')
         else:
-            contents = re.split('{;', content)
-            if len(contents[0]) > 1:
+            contents = re.split('{:', content)
+            suppressions = contents[0];
+            if len(suppressions) > 1:
                 actualContent = contents[1]
-                replacements = re.split('{', contents[0])
+                replacements = []
+                additionBrackets = [']', '}']
 
-                if '}:' in contents[0]:
-                    replacementsByBracketDirection = re.split('}:', contents[0])
-                    if len(replacementsByBracketDirection[0]) > 1:
-                        replacements = re.split('}', replacementsByBracketDirection[0])
-                        replacements.pop(0)
-                        actualContent = replaceCurlies(replacements, actualContent, '}', False)
-                        if any(rep in actualContent for rep in replacements):
-                            print('Rerunning replacement of the curlies due to some curlies still being in the content.')
-                            actualContent = replaceCurlies(replacements, actualContent, '}', False)
-                    replacements = re.split('{', replacementsByBracketDirection[1])
+                for bracket in additionBrackets:
+                    if bracket + ':' in suppressions:
+                        replacementsByBracketDirection = re.split(bracket + ':', suppressions)
+                        if len(replacementsByBracketDirection[0]) > 1:
+                            replacements = re.split(bracket, replacementsByBracketDirection[0])
+                            replacements.pop(0)
+                            actualContent = replaceCurlies(replacements, actualContent, bracket, False)
+                            if any(rep in actualContent for rep in replacements):
+                                print('Rerunning replacement of the curlies due to some curlies still being in the content.')
+                                actualContent = replaceCurlies(replacements, actualContent, bracket, False)
+                        suppressions = replacementsByBracketDirection[1]
 
+                replacements = re.split('{', suppressions)
                 replacements.pop(0)
                 actualContent = replaceCurlies(replacements, actualContent, '{', True)
                 if any(rep in actualContent for rep in replacements):

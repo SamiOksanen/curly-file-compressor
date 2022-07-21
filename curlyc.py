@@ -40,7 +40,7 @@ def main(argv):
         i = open(decompressfile, 'r')
         if outputfile == '':
             outputfile = decompressfile.replace('.curlyc', '')
-        print('Decompress file is ', decompressfile)
+        print('Decompress file is', decompressfile)
 
     ix = 1
     origoutputfile = outputfile
